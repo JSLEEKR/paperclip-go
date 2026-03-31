@@ -343,6 +343,25 @@ func TestStartAndStop(t *testing.T) {
 	eng.Stop()
 }
 
+func TestStartStopRestart(t *testing.T) {
+	eng := newTestEngine()
+	eng.SetExecuteFunc(func(ctx context.Context, run Run) (string, int64, int64, int64, error) {
+		return "ok", 0, 0, 0, nil
+	})
+
+	ctx := context.Background()
+
+	// First cycle
+	eng.Start(ctx)
+	time.Sleep(10 * time.Millisecond)
+	eng.Stop()
+
+	// Second cycle — previously panicked with "close of closed channel"
+	eng.Start(ctx)
+	time.Sleep(10 * time.Millisecond)
+	eng.Stop()
+}
+
 func TestDefaultSource(t *testing.T) {
 	eng := newTestEngine()
 	run, _ := eng.Enqueue(Run{ID: "run-1", CompanyID: "co-1", AgentID: "ag-1"})

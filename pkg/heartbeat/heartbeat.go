@@ -433,6 +433,9 @@ func (e *Engine) Count() int {
 
 // Start begins the background queue processor.
 func (e *Engine) Start(ctx context.Context) {
+	e.mu.Lock()
+	e.stopped = make(chan struct{})
+	e.mu.Unlock()
 	ctx, e.cancel = context.WithCancel(ctx)
 
 	go func() {
