@@ -464,6 +464,7 @@ func (e *Engine) Stop() {
 func (e *Engine) processQueue() {
 	e.mu.RLock()
 	executeFunc := e.executeFunc
+	leaseDur := e.leaseDuration
 	e.mu.RUnlock()
 
 	if executeFunc == nil {
@@ -481,7 +482,7 @@ func (e *Engine) processQueue() {
 		}
 
 		go func(r Run) {
-			ctx, cancel := context.WithTimeout(context.Background(), e.leaseDuration)
+			ctx, cancel := context.WithTimeout(context.Background(), leaseDur)
 			defer cancel()
 
 			result, inTok, outTok, cost, execErr := executeFunc(ctx, r)
